@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading - Prime Wheels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .loader {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        .loader::before, .loader::after {
+            content: '\1F697'; /* Car Unicode */
+            font-size: 50px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 1.5s linear infinite;
+        }
+        .loader::after {
+            content: '\1F3CD'; /* Motorcycle Unicode */
+            font-size: 40px;
+            animation-delay: -0.75s;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .loading-text {
+            position: absolute;
+            bottom: 20%;
+            font-family: Arial, sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <div class="loading-text">LOADING...</div>
+    
+    <script>
+        // Get the target URL from the query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUrl = urlParams.get('target') || '/vehicles';
+
+        setTimeout(() => {
+            window.location.href = targetUrl;
+        }, 3000); // Redirect after 3 seconds
+    </script>
+</body>
+</html>

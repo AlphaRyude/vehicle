@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Prime Wheels</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=range(9999)|random) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/pricedown" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/about-bg.js') }}"></script>
+    <style>
+        .about-container {
+            padding: 4rem 2rem;
+            min-height: calc(100vh - 80px);
+            color: var(--text-light);
+            position: relative;
+            z-index: 1;
+            background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .about-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: -1;
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .about-header h1 {
+            font-family: 'Pricedown', sans-serif;
+            font-size: 3.5rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .about-header p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-card {
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.9), rgba(15, 15, 15, 0.95));
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .about-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gold);
+        }
+
+        .about-card i {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-card h2 {
+            font-size: 1.8rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .about-card p {
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .mission-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9));
+            margin: 4rem 0;
+        }
+
+        .mission-section h2 {
+            font-family: 'Pricedown', sans-serif;
+            color: var(--accent-gold);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mission-section p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="logo">prime wheels</a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> home</a></li>
+            <li><a href="{{ url_for('vehicles') }}"><i class="fas fa-car"></i> vehicles</a></li>
+            <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> about</a></li>
+            <li><a href="{{ url_for('contact') }}"><i class="fas fa-envelope"></i> contact</a></li>
+        </ul>
+        
+        {% if session.get('logged_in') %}
+        <div class="user-welcome">
+            <i class="fas fa-user-circle"></i>
+            <div class="welcome-text">Welcome, <span>{{ session.get('username', 'User') }}</span></div>
+        </div>
+        <div class="auth-buttons">
+            <a href="{{ url_for('dashboard') }}" class="btn-login"><i class="fas fa-tachometer-alt"></i>dashboard</a>
+            <a href="{{ url_for('logout') }}" class="btn-register"><i class="fas fa-sign-out-alt"></i>logout</a>
+        </div>
+        {% else %}
+        <div class="auth-buttons">
+            <a href="{{ url_for('login') }}" class="btn-login"><i class="fas fa-sign-in-alt"></i>login</a>
+            <a href="{{ url_for('register') }}" class="btn-register"><i class="fas fa-user-plus"></i>register</a>
+        </div>
+        {% endif %}
+    </nav>
+
+    <div class="about-container">
+        <div class="about-header">
+            <h1>Welcome to Prime Wheels</h1>
+            <p>Your premier destination for luxury vehicle rentals, where sophistication meets the road.</p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-history"></i>
+                <h2>Our Legacy</h2>
+                <p>Founded with a passion for luxury automobiles, Prime Wheels has been serving distinguished clients since 2010, setting the standard for premium vehicle rentals.</p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-gem"></i>
+                <h2>Premium Fleet</h2>
+                <p>Our meticulously maintained collection features the latest models from the world's most prestigious automotive manufacturers.</p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-handshake"></i>
+                <h2>Exceptional Service</h2>
+                <p>We pride ourselves on delivering personalized, white-glove service that ensures your rental experience is nothing short of extraordinary.</p>
+            </div>
+        </div>
+
+        <div class="mission-section">
+            <h2>Our Mission</h2>
+            <p>To provide our clients with unparalleled access to luxury vehicles while delivering exceptional service that transforms every journey into a memorable experience. We strive to exceed expectations and set new standards in the luxury vehicle rental industry.</p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Safety First</h2>
+                <p>Every vehicle undergoes rigorous safety inspections and maintenance checks to ensure your peace of mind.</p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-clock"></i>
+                <h2>24/7 Support</h2>
+                <p>Our dedicated team is available around the clock to assist you with any queries or requirements.</p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-map-marked-alt"></i>
+                <h2>Nationwide Network</h2>
+                <p>With locations across the country, we ensure convenient access to our premium services wherever you are.</p>
+            </div>
+        </div>
+    </div>
+
+    {% include 'includes/footer.html' %}
+</body>
+</html>

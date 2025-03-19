@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>prime wheels</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=range(9999)|random) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/pricedown" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/counter.js') }}"></script>
+    <style>
+       
+
+      
+        .vehicle-slider {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 0 60px; /* Increased padding for navigation buttons */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            background: linear-gradient(to bottom, rgba(30, 30, 30, 0.8), rgba(15, 15, 15, 0.9));
+        }
+
+        .slider-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .slider-track {
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+            width: 400%;  /* Adjusted for 4 items */
+            height: 450px; /* Fixed height for the track */
+        }
+
+        .slider-item {
+            flex: 0 0 25%;  /* Each item takes 25% of width */
+            padding: 1rem;
+            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            opacity: 0.5;
+            transform: scale(0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%; /* Full height */
+            filter: grayscale(50%);
+        }
+
+        .slider-item.active {
+            opacity: 1;
+            transform: scale(1);
+            filter: grayscale(0%);
+        }
+
+        .slider-item img {
+            width: 100%;
+            height: 350px; /* Fixed height */
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            display: block; /* Ensures proper image display */
+            transform: translateZ(0); /* Force GPU acceleration */
+            transition: all 0.5s ease;
+        }
+
+        .slider-item:hover img {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider-item .vehicle-info {
+            text-align: center;
+            margin-top: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            width: 100%; /* Full width for text content */
+            padding: 0 1rem;
+        }
+
+        .slider-item.active .vehicle-info {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slider-item .vehicle-info h3 {
+            color: var(--text-light);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-item .vehicle-info p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            border: none;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10; /* Increased z-index */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-nav:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .slider-nav.prev {
+            left: 10px;
+        }
+
+        .slider-nav.next {
+            right: 10px;
+        }
+
+        /* Slider indicators */
+        .slider-indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .slider-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider-indicator.active {
+            background-color: var(--accent-color);
+            transform: scale(1.2);
+        }
+
+        .btn-see-more {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-see-more:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Notification -->
+    {% if session.get('just_logged_in') %}
+    <div class="login-notification show">
+        <i class="fas fa-check-circle"></i>
+        <div class="notification-content">
+            <div class="notification-title">Welcome Back!</div>
+            <div class="notification-message">You have successfully logged in.</div>
+        </div>
+        <div class="notification-progress"></div>
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="{{ url_for('about') }}" class="logo">prime wheels</a>
+        <ul class="nav-links">
+            <li><a href="#home" class="nav-link"><i class="fas fa-home"></i><span>home</span></a></li>
+            <li><a href="#" onclick="handlePageTransition('/gallery'); return false;" class="nav-link"><i class="fas fa-car"></i><span>vehicles</span></a></li>
+            <li><a href="#features" class="nav-link"><i class="fas fa-star"></i><span>features</span></a></li>
+            <li><a href="#testimonials" class="nav-link"><i class="fas fa-comments"></i><span>testimonials</span></a></li>
+            <li><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i><span>contact</span></a></li>
+        </ul>
+        
+        {% if session.get('logged_in') %}
+        <div class="user-welcome">
+            <i class="fas fa-user-circle"></i>
+            <div class="welcome-text">Welcome, <span>{{ session.get('username', 'User') }}</span></div>
+        </div>
+        <div class="auth-buttons">
+            <a href="{{ url_for('dashboard') }}" class="btn-login"><i class="fas fa-tachometer-alt"></i>dashboard</a>
+            <a href="{{ url_for('logout') }}" class="btn-register"><i class="fas fa-sign-out-alt"></i>logout</a>
+        </div>
+        {% else %}
+        <div class="auth-buttons">
+            <a href="{{ url_for('login') }}" class="btn-login"><i class="fas fa-sign-in-alt"></i>login</a>
+            <a href="{{ url_for('register') }}" class="btn-register"><i class="fas fa-user-plus"></i>register</a>
+        </div>
+        {% endif %}
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>experience luxury on wheels</h1>
+            <p>rent the finest luxury vehicles for your special moments</p>
+            <form class="booking-form">
+                <div class="form-group">
+                    <label for="pickup-date">pickup date</label>
+                    <input type="date" id="pickup-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="return-date">return date</label>
+                    <input type="date" id="return-date" required>
+                </div>
+                <button type="submit" class="btn-submit">book now</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <h2 class="section-title">why choose us</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-car feature-icon"></i>
+                <h3>premium vehicles</h3>
+                <p>latest models of luxury cars and bikes maintained to perfection</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-clock feature-icon"></i>
+                <h3>24/7 support</h3>
+                <p>round-the-clock assistance for all your needs</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h3>full insurance</h3>
+                <p>comprehensive coverage for worry-free rides</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-map-marker-alt feature-icon"></i>
+                <h3>flexible pickup</h3>
+                <p>choose your convenient pickup and drop-off locations</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <span class="stat-number" data-target="7000">0</span>
+                <span class="stat-label">Happy Clients</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <span class="stat-number" data-target="56">0</span>
+                <span class="stat-label">Number of Cars</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <span class="stat-number" data-target="93">0</span>
+                <span class="stat-label">Positive Reviews %</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-road"></i>
+                </div>
+                <span class="stat-number" data-target="589">0</span>
+                <span class="stat-label">Total kilometers</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <span class="stat-number" data-target="127">0</span>
+                <span class="stat-label">Car Center</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vehicle Fleet Section -->
+    <section class="vehicle-fleet">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Premium Fleet</h2>
+                <p>Experience luxury and performance with our exclusive collection</p>
+            </div>
+            
+            <div class="vehicle-slider">
+                <button class="slider-nav prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-container">
+                    <div class="slider-track">
+                        <div class="slider-item" data-category="luxury">
+                            <img src="{{ url_for('static', filename='images/vehicles/rolls-royce.jpg') }}" alt="Rolls-Royce Phantom">
+                            <div class="vehicle-info">
+                                <h3>Rolls-Royce Phantom</h3>
+                                <p>Experience unparalleled luxury and comfort with our flagship Rolls-Royce Phantom.</p>
+                            </div>
+                        </div>
+                        <div class="slider-item" data-category="luxury">
+                            <img src="{{ url_for('static', filename='images/vehicles/bentley.jpg') }}" alt="Bentley Continental GT">
+                            <div class="vehicle-info">
+                                <h3>Bentley Continental GT</h3>
+                                <p>The perfect blend of luxury and performance in a stunning grand tourer.</p>
+                            </div>
+                        </div>
+                        <div class="slider-item" data-category="supercar">
+                            <img src="{{ url_for('static', filename='images/vehicles/ferrari.jpg') }}" alt="Ferrari SF90 Stradale">
+                            <div class="vehicle-info">
+                                <h3>Ferrari SF90 Stradale</h3>
+                                <p>Ferrari's most powerful production car, combining hybrid technology with pure performance.</p>
+                            </div>
+                        </div>
+                        <div class="slider-item" data-category="sport-bike">
+                            <img src="{{ url_for('static', filename='images/vehicles/ducati.jpg') }}" alt="Ducati Panigale V4">
+                            <div class="vehicle-info">
+                                <h3>Ducati Panigale V4</h3>
+                                <p>The ultimate expression of two-wheeled performance and Italian engineering.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="slider-nav next"><i class="fas fa-chevron-right"></i></button>
+                
+                <div class="slider-indicators">
+                    <span class="slider-indicator active"></span>
+                    <span class="slider-indicator"></span>
+                    <span class="slider-indicator"></span>
+                    <span class="slider-indicator"></span>
+                </div>
+            </div>
+            <div class="view-more-container" style="text-align: center; margin-top: 2rem;">
+                <a href="/vehicles" class="view-more-btn" style="display: inline-block; padding: 1rem 2.5rem; background: linear-gradient(45deg, #b8860b, #daa520); color: #fff; text-decoration: none; border-radius: 30px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(184, 134, 11, 0.2);">View More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <h2 class="section-title">what our clients say</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <div class="client-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="client-info">
+                        <h4>john smith</h4>
+                        <span>luxury car enthusiast</span>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"the service was impeccable and the car was absolutely stunning. made my wedding day even more special!"</p>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <div class="client-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="client-info">
+                        <h4>sarah johnson</h4>
+                        <span>professional rider</span>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"best bike rental experience ever! the ducati was in perfect condition and the staff was very helpful."</p>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <div class="client-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="client-info">
+                        <h4>mike anderson</h4>
+                        <span>business executive</span>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"from booking to return, everything was smooth. the ferrari was a dream come true!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>ready for an unforgettable experience?</h2>
+            <p>book your dream vehicle today and experience luxury like never before</p>
+            <a href="/loading?target=/vehicles" class="btn-rent">rent now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'includes/footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Gallery filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const sliderItems = document.querySelectorAll('.slider-item');
+            let currentIndex = 0;
+
+            function showSlide(index) {
+                sliderItems.forEach(item => item.classList.remove('active'));
+                sliderItems[index].classList.add('active');
+            }
+
+            document.querySelector('.slider-nav.prev').addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + sliderItems.length) % sliderItems.length;
+                showSlide(currentIndex);
+            });
+
+            document.querySelector('.slider-nav.next').addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % sliderItems.length;
+                showSlide(currentIndex);
+            });
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+                    sliderItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+
+        // Enhanced Slider functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sliderTrack = document.querySelector('.slider-track');
+            const slides = document.querySelectorAll('.slider-item');
+            const prevButton = document.querySelector('.slider-nav.prev');
+            const nextButton = document.querySelector('.slider-nav.next');
+            const indicators = document.querySelectorAll('.slider-indicator');
+            let currentIndex = 0;
+            let isAnimating = false;
+            const animationDuration = 800; // Increased duration for smoother animation
+            let autoplayInterval;
+
+            // Set initial active slide
+            slides[currentIndex].classList.add('active');
+            indicators[currentIndex].classList.add('active');
+
+            function updateSlider(direction = 1) {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                // Remove active class from current slide and indicator
+                slides[currentIndex].classList.remove('active');
+                indicators[currentIndex].classList.remove('active');
+
+                // Update current index
+                if (direction === 1) {
+                    currentIndex = (currentIndex + 1) % slides.length;
+                } else {
+                    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                }
+
+                // Add active class to new current slide and indicator
+                slides[currentIndex].classList.add('active');
+                indicators[currentIndex].classList.add('active');
+
+                // Calculate the transform value
+                const transformValue = -currentIndex * (100 / slides.length);
+                
+                // Use requestAnimationFrame for smoother animations
+                requestAnimationFrame(() => {
+                    sliderTrack.style.transform = `translateX(${transformValue}%)`;
+                });
+
+                // Reset animation flag after transition completes
+                setTimeout(() => {
+                    isAnimating = false;
+                }, animationDuration);
+            }
+
+            // Previous button click handler
+            prevButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetAutoplay();
+                updateSlider(-1);
+            });
+
+            // Next button click handler
+            nextButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetAutoplay();
+                updateSlider(1);
+            });
+
+            // Indicator click handlers
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    if (currentIndex === index || isAnimating) return;
+                    
+                    // Remove active classes
+                    slides[currentIndex].classList.remove('active');
+                    indicators[currentIndex].classList.remove('active');
+                    
+                    // Set new index
+                    currentIndex = index;
+                    
+                    // Add active classes
+                    slides[currentIndex].classList.add('active');
+                    indicators[currentIndex].classList.add('active');
+                    
+                    // Update slider position
+                    const transformValue = -currentIndex * (100 / slides.length);
+                    sliderTrack.style.transform = `translateX(${transformValue}%)`;
+                    
+                    resetAutoplay();
+                });
+            });
+
+            // Function to start autoplay
+            function startAutoplay() {
+                autoplayInterval = setInterval(() => {
+                    updateSlider(1);
+                }, 5000); // Change slides every 5 seconds
+            }
+
+            // Function to reset autoplay
+            function resetAutoplay() {
+                clearInterval(autoplayInterval);
+                startAutoplay();
+            }
+
+            // Start autoplay initially
+            startAutoplay();
+
+            // Pause autoplay when user hovers over the slider
+            document.querySelector('.vehicle-slider').addEventListener('mouseenter', () => {
+                clearInterval(autoplayInterval);
+            });
+
+            // Resume autoplay when user leaves the slider
+            document.querySelector('.vehicle-slider').addEventListener('mouseleave', () => {
+                startAutoplay();
+            });
+            
+            // Preload images for smoother transitions
+            function preloadImages() {
+                slides.forEach(slide => {
+                    const img = slide.querySelector('img');
+                    if (img) {
+                        const src = img.getAttribute('src');
+                        if (src) {
+                            const preloadImg = new Image();
+                            preloadImg.src = src;
+                        }
+                    }
+                });
+            }
+            
+            // Add touch support for mobile devices
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            sliderTrack.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            sliderTrack.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50; // Minimum distance for a swipe
+                if (touchEndX < touchStartX - swipeThreshold) {
+                    // Swipe left - next slide
+                    updateSlider(1);
+                    resetAutoplay();
+                } else if (touchEndX > touchStartX + swipeThreshold) {
+                    // Swipe right - previous slide
+                    updateSlider(-1);
+                    resetAutoplay();
+                }
+            }
+            
+            // Call preload function
+            preloadImages();
+        });
+    </script>
+</body>
+</html>

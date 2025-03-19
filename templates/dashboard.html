@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Prime Wheels</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/pricedown" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">prime wheels</a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> home</a></li>
+            <li><a href="{{ url_for('vehicles') }}"><i class="fas fa-car"></i> vehicles</a></li>
+            <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> about</a></li>
+            <li><a href="{{ url_for('contact') }}"><i class="fas fa-envelope"></i> contact</a></li>
+        </ul>
+        
+        <div class="user-welcome">
+            <i class="fas fa-user-circle"></i>
+            <div class="welcome-text">Welcome, <span>{{ username }}</span></div>
+        </div>
+        <div class="auth-buttons">
+            <a href="{{ url_for('dashboard') }}" class="btn-login"><i class="fas fa-tachometer-alt"></i>dashboard</a>
+            <a href="{{ url_for('logout') }}" class="btn-register"><i class="fas fa-sign-out-alt"></i>logout</a>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header section-padding">
+        <div class="container">
+            <h1 class="section-title">your dashboard</h1>
+            <p class="dashboard-subtitle">Manage your bookings and account details</p>
+        </div>
+    </section>
+
+    <!-- Dashboard Content -->
+    <section class="dashboard-section">
+        <div class="dashboard-container">
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h3>active bookings</h3>
+                        <div class="dashboard-number">0</div>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h3>booking history</h3>
+                        <div class="dashboard-number">0</div>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h3>favorites</h3>
+                        <div class="dashboard-number">0</div>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h3>loyalty points</h3>
+                        <div class="dashboard-number">100</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Bookings Section -->
+    <section class="recent-bookings section-padding">
+        <div class="container">
+            <h2 class="section-title">recent bookings</h2>
+            <div class="bookings-container">
+                <div class="empty-state">
+                    <i class="fas fa-calendar-alt"></i>
+                    <p>You don't have any recent bookings</p>
+                    <a href="{{ url_for('vehicles') }}" class="btn-submit">browse vehicles</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'includes/footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html> 
